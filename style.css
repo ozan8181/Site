@@ -1,0 +1,44 @@
+#yorumYeri > div {
+    display: none;
+}
+
+#yorumYeri > div.active {
+    display: block;
+}
+
+.solTarafMenuler {
+    min-height: 100vh;
+    background: #2c3e50;
+}
+
+.solTarafMenuler .nav-link {
+    color: rgba(255,255,255,.75);
+    padding: 1rem;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.solTarafMenuler .nav-link:hover,
+.solTarafMenuler .nav-link.active {
+    color: white;
+    background: rgba(255,255,255,.1);
+}
+
+.islemKartlari {
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.islemKartlari:hover {
+    transform: translateY(-5px);
+}
+
+.anaMenuGrafik {
+    height: 300px;
+}        
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+.modal {
+  z-index: 1050 !important;
+}

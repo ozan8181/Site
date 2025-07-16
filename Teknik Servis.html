@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teknik Servis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="script.js">
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sol taraf menü - Ana navigasyon -->
+            <div class="col-lg-2 px-0 solTarafMenuler">
+                <div class="d-flex flex-column p-3">
+                    <!-- Logo ve marka -->
+                    <div class="navbar-brand-container py-3 text-center">
+                        <a href="#" class="d-flex align-items-center justify-content-center text-white text-decoration-none">
+                            <div class="logo-container me-2">
+                                <i class="fas fa-tools fa-2x"></i>
+                            </div>
+                            <div class="brand-text">
+                                <span class="fs-2 fw-bold">TeknikServis</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <hr class="text-white">
+                    <!-- Ana menü öğeleri -->
+                    <ul class="nav nav-pills flex-column mb-auto" id="sideMenu">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-page="dashboard">
+                                <i class="fas fa-home"></i> Ana Sayfa
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" data-page="yeni_servis">
+                                <i class="fas fa-plus-circle"></i> Yeni Servis Kaydı
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" data-page="servis_kayitlari">
+                                <i class="fas fa-list"></i> Servis Kayıtları
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" data-page="faturalar">
+                                <i class="fas fa-file-invoice"></i> Fatura İşlemleri
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" data-page="sms_gonder">
+                                <i class="fas fa-sms"></i> SMS Gönder
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            
+            <!-- Ana içerik alanı -->
+            <div class="col-lg-10 px-4 py-3" id="yorumYeri">
+                
+                <!-- Ana Sayfa (Dashboard) Sayfası -->
+                <div id="dashboard" class="active">
+                    <!-- Durum kartları - Hızlı özet bilgileri -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card islemKartlari bg-warning text-white h-100" onclick="servis_listesi_goster('beklemede')">
+                                <div class="card-body">
+                                    <h6 class="card-title">BEKLEMEDE</h6>
+                                    <h2 class="card-text mb-0" id="beklemede_sayisi">0</h2>
+                                    <small>İşlem</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card islemKartlari bg-danger text-white h-100" onclick="servis_listesi_goster('teslime_hazir')">
+                                <div class="card-body">
+                                    <h6 class="card-title">TESLİME HAZIR</h6>
+                                    <h2 class="card-text mb-0" id="teslime_hazir_sayisi">0</h2>
+                                    <small>İşlem</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card islemKartlari bg-success text-white h-100" onclick="servis_listesi_goster('teslim_edildi')">
+                                <div class="card-body">
+                                    <h6 class="card-title">TESLİM EDİLDİ</h6>
+                                    <h2 class="card-text mb-0" id="teslim_edildi_sayisi">0</h2>
+                                    <small>İşlem</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card islemKartlari bg-primary text-white h-100" onclick="servis_listesi_goster('garantide')">
+                                <div class="card-body">
+                                    <h6 class="card-title">GARANTİDE</h6>
+                                    <h2 class="card-text mb-0" id="garantide_sayisi">0</h2>
+                                    <small>İşlem</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <!-- Haftalık analiz grafiği -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Son 1 Hafta Analizi</h5>
+                            <div class="anaMenuGrafik">
+                                <canvas id="analiz_grafigi"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alt bölüm bilgi kartları -->
+                    <div class="row g-4">
+                        <!-- Son servis kayıtları -->
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Son 10 Servis Kaydı</h5>
+                                    <button class="btn btn-sm btn-primary" onclick="tum_servisleri_goster()">
+                                        Tümünü Gör
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group list-group-flush" id="son_servisler">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Teslim durumu listesi -->
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Teslim Durumu</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group list-group-flush" id="teslim_durumu">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Yeni Servis Kaydı Sayfası -->
+                <div id="yeni_servis">
+                    <h3 class="mb-4">Yeni Servis Kaydı</h3>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-tools me-2"></i>Servis Formu</span>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Yardım" data-bs-toggle="tooltip">
+                                            <i class="fas fa-question-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form id="servis_formu" onsubmit="yeni_servis_kaydet(event)">
+                                        <!-- Müşteri bilgileri bölümü -->
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                <div class="card bg-light">
+                                                    <div class="card-body pb-2">
+                                                        <h6 class="card-subtitle mb-3 text-muted">
+                                                            <i class="fas fa-user me-2"></i>Müşteri Bilgileri
+                                                        </h6>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                                                                    <input type="text" class="form-control" placeholder="Müşteri Adı" id="musteri_adi" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                                                    <input type="tel" class="form-control" placeholder="Telefon" id="musteri_telefon" required>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cihaz bilgileri bölümü -->
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                <div class="card bg-light">
+                                                    <div class="card-body pb-2">
+                                                        <h6 class="card-subtitle mb-3 text-muted">
+                                                            <i class="fas fa-mobile-alt me-2"></i>Cihaz Bilgileri
+                                                        </h6>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+                                                                    <input type="text" class="form-control" placeholder="Marka/Model" id="cihaz_marka_model" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                                    <input type="text" class="form-control" placeholder="Seri Numarası" id="seri_numarasi">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                                                                    <textarea class="form-control" placeholder="Arıza/Şikayet" rows="3" id="ariza_sikayet" required></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Servis bilgileri bölümü -->
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                <div class="card bg-light">
+                                                    <div class="card-body pb-2">
+                                                        <h6 class="card-subtitle mb-3 text-muted">
+                                                            <i class="fas fa-info-circle me-2"></i>Servis Bilgileri
+                                                        </h6>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-tasks"></i></span>
+                                                                    <select class="form-select" id="servis_durumu" required>
+                                                                        <option value="" disabled selected>Servis Durumu Seçin</option>
+                                                                        <option value="beklemede">Beklemede</option>
+                                                                        <option value="incelemede">İncelemede</option>
+                                                                        <option value="tamir_edildi">Tamir Edildi</option>
+                                                                        <option value="teslime_hazir">Teslime Hazır</option>
+                                                                        <option value="teslim_edildi">Teslim Edildi</option>
+                                                                        <option value="garantide">Garantide</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                                                    <input type="date" class="form-control" id="tahmini_teslim_tarihi">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12 mb-3">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text"><i class="fas fa-comment-alt"></i></span>
+                                                                    <textarea class="form-control" placeholder="Teknisyen Notu" rows="2" id="teknisyen_notu"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Form kontrol butonları -->
+                                        <div class="d-flex justify-content-between">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="formu_temizle()">
+                                                <i class="fas fa-eraser me-1"></i> Temizle
+                                            </button>
+                                            <div>
+                                                <button type="button" class="btn btn-outline-info me-2" onclick="formu_onizle()">
+                                                    <i class="fas fa-eye me-1"></i> Önizle
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-save me-1"></i> Kaydet
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Servis Kayıtları Sayfası -->
+                <div id="servis_kayitlari">
+                    <h3 class="mb-4">Servis Kayıtları</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Servis No</th>
+                                    <th>Müşteri</th>
+                                    <th>Cihaz</th>
+                                    <th>Durum</th>
+                                    <th>Tarih</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servis_kayitlari_tablosu">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                
+                <!-- Fatura İşlemleri Sayfası -->
+                <div id="faturalar">
+                    <h3 class="mb-4">Fatura İşlemleri</h3>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!-- Fatura kontrol butonları ve arama -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <button class="btn btn-primary me-2" onclick="yeni_fatura_olustur()">
+                                                <i class="fas fa-plus"></i> Yeni Fatura
+                                            </button>
+                                            <button class="btn btn-secondary" onclick="fatura_disa_aktar()">
+                                                <i class="fas fa-file-export"></i> Dışa Aktar
+                                            </button>
+                                        </div>
+                                        <div class="d-flex">
+                                            <input type="text" class="form-control me-2" placeholder="Fatura Ara..." id="fatura_arama">
+                                            <button class="btn btn-outline-primary">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Fatura tablosu -->
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fatura No</th>
+                                                    <th>Müşteri</th>
+                                                    <th>Tarih</th>
+                                                    <th>Tutar</th>
+                                                    <th>Durum</th>
+                                                    <th>İşlemler</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="fatura_tablosu">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fatura düzenleme modalı -->
+                <div class="modal fade" id="faturaDuzenleModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Fatura Düzenle</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                            </div>
+                            <div class="modal-body" id="faturaDuzenleModalBody">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- SMS Gönderme Sayfası -->
+                <div id="sms_gonder">
+                    <h3 class="mb-4">SMS Gönder</h3>
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form>
+                                <!-- Telefon ve şablon seçim alanı -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="telefonNumarasi" class="form-label">Telefon Numarası:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            <input type="tel" class="form-control" id="telefonNumarasi" placeholder="05XXXXXXXXX" required pattern="[0-9]{11}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="sablonSecin" class="form-label">SMS Şablonu:</label>
+                                        <select class="form-select" id="sablonSecin" onchange="sablonYukle()">
+                                            <option value="" selected>Şablon Seçin</option>
+                                            <option value="servis_tamamlandi">Servis Tamamlandı</option>
+                                            <option value="randevu_hatirlatma">Randevu Hatırlatma</option>
+                                            <option value="fiyat_onayi">Fiyat Onayı</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- SMS mesaj içeriği -->
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label for="mesaj" class="form-label">Mesaj:</label>
+                                        <textarea class="form-control" id="mesaj" rows="4" placeholder="Mesajınızı buraya yazın..." required></textarea>
+                                        <div class="d-flex justify-content-between mt-1">
+                                            <small class="text-muted">Burası Müşteriye SMS Gönderir. Lütfen Dikkat ediniz.</small>
+                                            <small class="text-muted"><span id="karakterSayaci">0</span>/160 karakter</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- SMS gönderim butonları -->
+                                <div class="row">
+                                    <div class="col-md-12 d-flex justify-content-between">
+                                        <div>
+                                            <button type="button" class="btn btn-primary" onclick="smsGonder()">
+                                                <i class="fas fa-paper-plane me-2"></i>Gönder
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary ms-2" onclick="mesajTemizle()">
+                                                <i class="fas fa-eraser me-2"></i>Temizle
+                                            </button>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="servisKadiEkle">
+                                            <label class="form-check-label" for="servisKadiEkle">Servis kaydına ekle</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- SMS geçmişi tablosu -->
+                    <div class="card shadow-sm mt-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">SMS Geçmişi</h6>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-sync-alt me-1"></i>Yenile
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Alıcı</th>
+                                        <th>Mesaj</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sms_gecmisi">
+                                    <tr>
+                                        <td>26.02.2025 14:30</td>
+                                        <td>0555 123 4567</td>
+                                        <td>Cihazınız hazır, teslim alabilirsiniz.</td>
+                                        <td><span class="badge bg-success">İletildi</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--servis düzenleme modelini açar-->
+   <div class="modal fade" id="servisDuzenleModal" tabindex="-1" aria-labelledby="servisDuzenleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="servisDuzenleModalLabel">Servis Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="servisDuzenleModalBody">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--script kütüphaneleri-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
